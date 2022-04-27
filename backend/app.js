@@ -15,29 +15,31 @@ app.use(helmet());
 // setup frontend resource
 app.use(express.static(path.join(__dirname, '..', 'dist')));
 
-// setup route
-app.use('/auth', require('./routes/authenticate'));
+function setUpRoutes() {
+    // setup route
+    app.use('/auth', require('./routes/authenticate'));
+    app.use('/activity', require('./routes/activity'));
 
-app.use((req, res, next) => {
-    next(createError(404));
-});
+    app.use((req, res, next) => {
+        next(createError(404));
+    });
 
-app.use((err, req, res, next) => {
+    app.use((err, req, res, next) => {
 
-    // send render response
-    res.status(err.status || 500);
-    res.json({
-        message: err.message
-    })
-});
-
-
+        // send render response
+        res.status(err.status || 500);
+        res.json({
+            message: err.message
+        });
+    });
+}
 
 // epxose function to start application
 async function start() {
     mongoose.Promise = Promise;
     await mongoose.connect(configuration.mongoUrl);
-   
+
+    setUpRoutes();
     app.listen(configuration.port, () => {
 
     });

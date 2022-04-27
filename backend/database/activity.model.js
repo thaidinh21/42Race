@@ -41,7 +41,7 @@ const ActivitySchema = new Schema({
     manual: { type: Boolean },
     private: { type: Boolean },
     flagged: { type: Boolean },
-    gear_id: { type: Number },
+    gear_id: { type: String },
     from_accepted_tag: { type: Boolean },
     average_speed: { type: Number },
     max_speed: { type: Number },

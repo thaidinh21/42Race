@@ -4,7 +4,8 @@
   "description": "Dinh Thai 's 42Race coding test implementation",
   "main": "index.js",
   "scripts": {
-    "build-frontend": "Webpack ./frontend/",
+    "build-frontend": "webpack ./frontend/",
+    "prestart": "npm run build-frontend",
     "start": "node main.js"
   },
   "repository": {

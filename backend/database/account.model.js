@@ -3,7 +3,6 @@ let Schema = mongoose.Schema;
 let AccountSchema = new Schema({
     id: { type: Number, required: true, unique: true },
     username: { type: String },
-    resource_state: { type: Number },
     firstname: { type: String },
     lastname: { type: String },
     city: { type: String },
