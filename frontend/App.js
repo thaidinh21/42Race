@@ -62,6 +62,7 @@ const App = () => {
             setLoggedIn(false);
             setUser({});
             setToken(null);
+            localStorage.removeItem("access_token");
             openToast("User disconnected", "success");
         }).catch(err => {
             openToast("Could not disconenct user", "error");
