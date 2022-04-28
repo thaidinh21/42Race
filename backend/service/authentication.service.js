@@ -55,9 +55,29 @@ const deauthenticate = async (req, res) => {
 const loginWithAccessToken = async (req, res) => {
     const { accessToken } = req.body;
     try {
-        const loginResult = await LoginModel.findOne({ access_token: accessToken }).select("-_id").populate("account", "id -_id").lean();
-        let response = {
-            ...loginResult,
+        let loginResult = await LoginModel.findOne({ access_token: accessToken }).populate("account");
+        
+        
+        if(!loginResult){
+            return res.status(401).send("Could not login");
+        }
+        let response;
+        // refresh token if expired
+        const currentDateTime = new Date().getTime();
+        const tokenExpiresAt = loginResult.expires_at.getTime();
+        if(currentDateTime > tokenExpiresAt){
+            const refreshTokenResponse = await stavaService.refreshToken(loginResult.refresh_token);
+            
+            loginResult.access_token = refreshTokenResponse.access_token;
+            loginResult.expires_at = refreshTokenResponse.expires_at;
+            loginResult.refresh_token = refreshTokenResponse.refresh_token;
+            loginResult.expires_in = refreshTokenResponse.expires_in;
+            loginResult = await loginResult.save();
+            
+        }
+        
+        response = {
+            ...loginResult.toObject(),
             athlete: loginResult.account
         };
         delete response.account;
@@ -66,6 +86,7 @@ const loginWithAccessToken = async (req, res) => {
         res.status(500).send(err.message);
     }
 }
+
 
 module.exports = {
     exchangeCodeToToken,

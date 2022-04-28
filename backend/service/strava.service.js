@@ -21,15 +21,15 @@ const exchangeCodeForToken = async (code) => {
         },
         responseType: 'json'
     });
-    return JSON.parse(response.data)
+    return JSON.parse(response.data);
 }
 
 const refreshToken = async (refresh_token) => {
-    const formData = new FormData();
-    formData.append('refresh_token', refresh_token);
-    formData.append('grant_type', 'refresh_token');
-    _attachClientInfoToFormData(formData);
-    const response = await restClient.post('/api/v3/oauth/token', formData);
+    const body = new url.URLSearchParams();
+    body.append('refresh_token', refresh_token);
+    body.append('grant_type', 'refresh_token');
+    _attachClientInfoToFormData(body);
+    const response = await restClient.post('/api/v3/oauth/token', body.toString());
     return response.data;
 }
 
@@ -45,7 +45,7 @@ const getAccountInfo = async (accessToken) => {
             'Authorization': `Bearer ${accessToken}`
         }
     });
-    return response.data;
+    return JSON.parse(response.data);
 }
 
 const getListActivities = async (accessToken, pageOptions = {}) => {
