@@ -1,17 +1,19 @@
 import React from "react";
-import logo from './logo.png';
-const SyncComponent = (props) =>{
+import logo from '../logo.png';
+const SyncComponent = (props) => {
+    const {user, disconnector, sync} = props;
+    const url =  `https://www.strava.com/athletes/${user.id}`;
     return <div className="center" >
         <div className="center" style={{width: '100%', marginBottom: '2em'}}>
             <img class="center" src={logo} width="178"></img>
         </div>
         <div className="center" style={{width: '100%', marginBottom: '2em'}}>
-            <a className="alt-link center" href="https://www.strava.com/athletes/50617568" >https://www.strava.com/athletes/50617568</a>
+        <a className="alt-link center" href={url}>{url}</a>
         </div>
         <div className="center" style={{width: '100%', marginBottom: '2em'}}>
-            <a className="button transparent-btn">Disconnect</a>
+            <a className="button transparent-btn" onClick={disconnector}>Disconnect</a>
         </div>
-        <a className="button">Sync</a>
+        <a className="button" onClick={sync}>Sync</a>
     </div>
 }
 

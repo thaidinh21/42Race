@@ -4,9 +4,12 @@ const AccountModel = require('../database/account.model');
 const LoginModel = require('../database/login.model');
 
 
-const authenticate = async (req, res) => {
+const exchangeCodeToToken = async (req, res) => {
     const { code } = req.body;
     const stravaResponse = await stavaService.exchangeCodeForToken(code);
+    if (stravaResponse.errors) {
+        return res.status(401).send();
+    }
     const { athlete } = stravaResponse;
     let account = await AccountModel.findOne({
         id: athlete.id
@@ -48,10 +51,24 @@ const deauthenticate = async (req, res) => {
         await session.endSession();
         res.status(500).send();
     }
-
+}
+const loginWithAccessToken = async (req, res) => {
+    const { accessToken } = req.body;
+    try {
+        const loginResult = await LoginModel.findOne({ access_token: accessToken }).select("-_id").populate("account", "id -_id").lean();
+        let response = {
+            ...loginResult,
+            athlete: loginResult.account
+        };
+        delete response.account;
+        res.json(response);
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
 }
 
 module.exports = {
-    authenticate,
-    deauthenticate
+    exchangeCodeToToken,
+    deauthenticate,
+    loginWithAccessToken
 }

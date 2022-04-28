@@ -1,5 +1,5 @@
 import React from "react";
-import logo from './logo.png';
+import logo from '../logo.png';
 const ConnectComponent = (props) =>{
     return <div className="center" >
         <div className="center" style={{width: '100%', marginBottom: '2em'}}>

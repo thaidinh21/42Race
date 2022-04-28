@@ -19,6 +19,7 @@ function setUpRoutes() {
     // setup route
     app.use('/auth', require('./routes/authenticate'));
     app.use('/activity', require('./routes/activity'));
+    app.use('/account', require('./routes/account'));
 
     app.use((req, res, next) => {
         next(createError(404));
