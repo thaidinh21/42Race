@@ -71,7 +71,9 @@ const filter = async (req, res) => {
     const execQuery = [];
    
 
-    const activitieQuery = ActivityModel.find(modelFilter).select("-_id -account")
+    const activitieQuery = ActivityModel.find(modelFilter)
+        .select("-_id")
+        .populate("account", "-_id")
         .skip(page * perPage).limit(perPage).sort({
             start_date: -1
         });
