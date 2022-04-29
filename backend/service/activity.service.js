@@ -39,7 +39,13 @@ const sync = async (req, res) => {
 
 const filter = async (req, res) => {
     const { filter } = req.body;
-    const page = filter.page || 0;
+    let page = Number.parseInt(filter.page);
+    if(Number.isNaN(page) || page <= 0){
+       page = 0; 
+    } else{
+        page = page - 1;
+    }
+    
     const perPage = filter.perPage || 30;
     const type = filter.type;
     const user = filter.user;
@@ -47,20 +53,23 @@ const filter = async (req, res) => {
     if (type) {
         modelFilter['type'] = type;
     }
-    const accountFilters = {};
+
     if (user && user.name) {
         const nameSearch = new RegExp(user.name, "i")
-        accountFilters['$or'] = [
-            { 'account.first_name': { $regex: nameSearch } },
-            { 'account.last_name': { $regex: nameSearch } }
-        ]
+        const accountFilters = {
+            '$or': [
+                { firstname: { $regex: nameSearch } },
+                { lastname: { $regex: nameSearch } }
+            ]
+        };
+        const accountIds = await AccountModel.find(accountFilters).select("_id").lean();
+        if (accountIds && accountIds.length) {
+            modelFilter['account'] = { $in: accountIds.map(i => i._id) };
+        }
     }
-    const accountIds = await AccountModel.find(accountFilters).select("_id").lean();
-    const execQuery = [];
 
-    if (accountIds && accountIds.length) {
-        modelFilter['account'] = { $all: accountIds.map(i => i._id) };
-    }
+    const execQuery = [];
+   
 
     const activitieQuery = ActivityModel.find(modelFilter).select("-_id -account")
         .skip(page * perPage).limit(perPage).sort({
@@ -75,7 +84,7 @@ const filter = async (req, res) => {
             results,
             pagination: {
                 count,
-                page,
+                page: page + 1,
                 perPage
             }
         })
